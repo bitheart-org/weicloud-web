@@ -4,14 +4,27 @@
 
 <style>
 :root {
-  --app-bg-start: #f3f6ff;
-  --app-bg-end: #f8fafc;
+  --app-bg: #f6f7f9;
+  --panel-bg: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --brand-primary: #0e8420;
+  --brand-primary-soft: rgba(14, 132, 32, 0.12);
 }
 
 body {
   margin: 0;
-  background: linear-gradient(160deg, var(--app-bg-start) 0%, var(--app-bg-end) 100%);
-  color: #0f172a;
+  font-family:
+    "Inter",
+    "SF Pro Text",
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  background: var(--app-bg);
+  color: var(--text-primary);
 }
 
 #app {
@@ -20,47 +33,173 @@ body {
 
 .app-shell {
   min-height: 100vh;
+  background: var(--app-bg);
 }
 
 .app-sidebar {
-  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebar-brand {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sidebar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+}
+
+.sidebar-subtitle {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.sidebar-menu {
+  padding: 10px 8px;
 }
 
 .app-sidebar .el-menu {
   border-right: none;
-  background: transparent;
+  background: var(--panel-bg);
 }
 
 .app-sidebar .el-menu-item {
-  color: #cbd5e1;
-  margin: 6px 10px;
-  border-radius: 10px;
+  color: #374151;
+  margin: 2px 0;
+  border-radius: 8px;
+  height: 38px;
+  line-height: 38px;
+  font-weight: 500;
 }
 
 .app-sidebar .el-menu-item.is-active {
-  background: rgba(99, 102, 241, 0.25);
-  color: #ffffff;
+  background: var(--brand-primary-soft);
+  color: #0b5f17;
 }
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 14px 14px 0;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  margin: 12px 12px 0;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--panel-bg);
 }
 
 .app-main {
-  padding-top: 14px;
+  padding: 12px;
+}
+
+.header-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metric-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metric-value {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .modern-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.modern-card :where(.el-card__header) {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modern-table :where(.el-table th.el-table__cell) {
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+}
+
+.modern-table :where(.el-table td.el-table__cell) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--brand-primary);
+  --el-button-border-color: var(--brand-primary);
+  --el-button-hover-bg-color: #0a6a19;
+  --el-button-hover-border-color: #0a6a19;
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  border-radius: 8px;
+}
+
+.el-dialog {
+  border-radius: 12px;
+}
+
+@media (max-width: 1100px) {
+  .app-sidebar {
+    width: 190px !important;
+  }
+  .metric-value {
+    font-size: 22px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
 }
 </style>

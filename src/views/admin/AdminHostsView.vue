@@ -1,14 +1,21 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">宿主机管理</h2>
+        <div class="page-subtitle">连接并维护 Incus 宿主机，查看在线状态与容量</div>
+      </div>
+    </div>
+
+    <el-card class="modern-card">
       <el-space>
         <el-button type="primary" @click="loadHosts">刷新</el-button>
         <el-button type="success" @click="openCreateDialog">添加宿主机</el-button>
       </el-space>
     </el-card>
 
-    <el-card>
-      <el-table :data="hosts" v-loading="loading" empty-text="暂无宿主机">
+    <el-card class="modern-card modern-table">
+      <el-table :data="hosts" v-loading="loading" empty-text="暂无宿主机" table-layout="fixed">
         <el-table-column prop="name" label="名称" min-width="140" />
         <el-table-column prop="address" label="地址" min-width="260" />
         <el-table-column prop="cpu_cores" label="CPU 核数" width="100" />
@@ -34,7 +41,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-  </el-space>
+  </div>
 
   <el-dialog v-model="createDialogVisible" title="添加宿主机" width="720px">
     <el-form :model="createForm" label-width="100px">

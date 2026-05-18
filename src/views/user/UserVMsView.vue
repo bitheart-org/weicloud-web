@@ -1,11 +1,15 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">我的虚拟机</h2>
+        <div class="page-subtitle">查看已分配实例，执行开关机、重启与密码重置</div>
+      </div>
       <el-button type="primary" @click="loadVMs">刷新</el-button>
-    </el-card>
+    </div>
 
-    <el-card>
-      <el-table :data="vms" v-loading="loading" empty-text="暂无分配的虚拟机">
+    <el-card class="modern-card modern-table">
+      <el-table :data="vms" v-loading="loading" empty-text="暂无分配的虚拟机" table-layout="fixed">
         <el-table-column prop="name" label="名称" min-width="140" />
         <el-table-column prop="image" label="镜像" min-width="170" />
         <el-table-column label="规格" min-width="180">
@@ -33,6 +37,7 @@
           <template #default="{ row }">
             <VmActions
               :status="row.status"
+              compact
               show-reset-password
               show-detail
               @start="start(row.id)"
@@ -45,7 +50,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-  </el-space>
+  </div>
 
   <el-dialog v-model="passwordDialogVisible" title="新 root 密码" width="420px">
     <el-alert type="warning" :closable="false" show-icon>请立即记录该密码，关闭后将无法再次查看。</el-alert>

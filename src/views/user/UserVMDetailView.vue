@@ -1,10 +1,17 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">虚拟机详情</h2>
+        <div class="page-subtitle">查看实例信息、资源占用并进行远程连接</div>
+      </div>
+      <el-button @click="back">返回列表</el-button>
+    </div>
+
+    <el-card class="modern-card">
       <template #header>
         <div style="display: flex; justify-content: space-between; align-items: center">
-          <strong>虚拟机详情</strong>
-          <el-button @click="back">返回列表</el-button>
+          <strong>基础信息</strong>
         </div>
       </template>
       <el-descriptions :column="2" border v-if="vm">
@@ -32,7 +39,7 @@
       </el-space>
     </el-card>
 
-    <el-card>
+    <el-card class="modern-card">
       <template #header>
         <strong>实时资源监控</strong>
       </template>
@@ -58,7 +65,7 @@
         <el-button type="primary" @click="updateLoginPassword">确认修改</el-button>
       </template>
     </el-dialog>
-  </el-space>
+  </div>
 </template>
 
 <script setup lang="ts">

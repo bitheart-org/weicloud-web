@@ -1,5 +1,12 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">虚拟机管理</h2>
+        <div class="page-subtitle">创建、分配并调整虚拟机配置，统一查看运行状态</div>
+      </div>
+    </div>
+
     <el-card class="modern-card">
       <el-space>
         <el-button type="primary" @click="loadData">刷新</el-button>
@@ -7,7 +14,7 @@
       </el-space>
     </el-card>
 
-    <el-card class="modern-card">
+    <el-card class="modern-card modern-table">
       <el-table :data="vms" v-loading="loading" empty-text="暂无虚拟机" table-layout="fixed">
         <el-table-column prop="name" label="名称" min-width="130" show-overflow-tooltip />
         <el-table-column prop="image" label="镜像" min-width="150" show-overflow-tooltip />
@@ -61,7 +68,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-  </el-space>
+  </div>
 
   <el-dialog v-model="createVisible" title="创建 VM" width="560px">
     <el-form :model="createForm" label-width="100px">

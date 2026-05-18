@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card class="modern-card">
     <template #header>
       <div style="display: flex; justify-content: space-between; align-items: center">
         <strong>VNC 控制台</strong>

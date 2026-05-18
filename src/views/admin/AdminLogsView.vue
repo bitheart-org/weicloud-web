@@ -1,10 +1,14 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">操作日志</h2>
+        <div class="page-subtitle">记录关键运维动作，便于审计与问题追踪</div>
+      </div>
       <el-button type="primary" @click="loadLogs">刷新</el-button>
-    </el-card>
-    <el-card>
-      <el-table :data="logs" v-loading="loading" empty-text="暂无操作日志">
+    </div>
+    <el-card class="modern-card modern-table">
+      <el-table :data="logs" v-loading="loading" empty-text="暂无操作日志" table-layout="fixed">
         <el-table-column prop="created_at" label="时间" min-width="180">
           <template #default="{ row }">{{ new Date(row.created_at).toLocaleString() }}</template>
         </el-table-column>
@@ -27,7 +31,7 @@
         />
       </div>
     </el-card>
-  </el-space>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,13 @@
 <template>
-  <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+  <div class="page-stack">
+    <div class="page-title-row">
+      <div>
+        <h2 class="page-title">用户管理</h2>
+        <div class="page-subtitle">维护管理员与普通用户账号，统一权限与状态</div>
+      </div>
+    </div>
+
+    <el-card class="modern-card">
       <el-space>
         <el-input v-model="query" placeholder="按用户名/显示名搜索" clearable @keyup.enter="loadUsers" />
         <el-button type="primary" @click="loadUsers">搜索</el-button>
@@ -8,8 +15,8 @@
       </el-space>
     </el-card>
 
-    <el-card>
-      <el-table :data="users" v-loading="loading" empty-text="暂无用户">
+    <el-card class="modern-card modern-table">
+      <el-table :data="users" v-loading="loading" empty-text="暂无用户" table-layout="fixed">
         <el-table-column prop="username" label="用户名" min-width="130" />
         <el-table-column prop="display_name" label="显示名" min-width="150" />
         <el-table-column prop="email" label="邮箱" min-width="180" />
@@ -40,7 +47,7 @@
         />
       </div>
     </el-card>
-  </el-space>
+  </div>
 
   <el-dialog v-model="createDialogVisible" title="新建用户" width="460px">
     <el-form :model="createForm" label-width="90px">

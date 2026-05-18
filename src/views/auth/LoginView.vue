@@ -1,9 +1,12 @@
 <template>
   <div class="login-page">
     <el-card class="login-card">
-      <template #header>
-        <strong>WeiCloud 登录</strong>
-      </template>
+      <div class="login-brand">
+        <span class="brand-dot" />
+        <span>WeiCloud Console</span>
+      </div>
+      <h2 class="login-title">欢迎登录</h2>
+      <p class="login-subtitle">继续访问虚拟机与宿主机管理模块</p>
       <el-form :model="form" @submit.prevent="onSubmit">
         <el-form-item label="用户名">
           <el-input v-model="form.username" autocomplete="username" />
@@ -58,9 +61,38 @@ async function onSubmit() {
   align-items: center;
   justify-content: center;
   padding: 16px;
+  background:
+    radial-gradient(1200px 500px at 0% 0%, rgba(14, 132, 32, 0.09), transparent),
+    radial-gradient(900px 400px at 100% 100%, rgba(14, 132, 32, 0.07), transparent),
+    #f6f7f9;
 }
 
 .login-card {
   width: 420px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #0e8420;
+}
+
+.login-title {
+  margin: 14px 0 4px;
+}
+
+.login-subtitle {
+  margin: 0 0 14px;
+  color: #6b7280;
 }
 </style>
