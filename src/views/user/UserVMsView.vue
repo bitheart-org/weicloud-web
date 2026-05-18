@@ -24,6 +24,7 @@
               <el-button size="small" @click="stop(row.id)">关机</el-button>
               <el-button size="small" type="warning" @click="reboot(row.id)">重启</el-button>
               <el-button size="small" type="danger" @click="resetPassword(row.id)">重置密码</el-button>
+              <el-button size="small" @click="toDetail(row.id)">详情</el-button>
             </el-space>
           </template>
         </el-table-column>
@@ -43,9 +44,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 import { getMyVMResource, listMyVMs, rebootMyVM, resetMyVMPassword, startMyVM, stopMyVM } from "../../api/user-vms";
 import type { VM } from "../../api/admin-vms";
 
+const router = useRouter();
 const loading = ref(false);
 const vms = ref<VM[]>([]);
 const vmResources = ref<Record<string, { cpu: number; memory: number }>>({});
@@ -128,5 +131,9 @@ function resourceText(id: string) {
   const metrics = vmResources.value[id];
   if (!metrics) return "-";
   return `CPU: ${(metrics.cpu / 1e9).toFixed(2)}s / MEM: ${(metrics.memory / 1024 / 1024).toFixed(0)}MB`;
+}
+
+async function toDetail(id: string) {
+  await router.push(`/user/vms/${id}`);
 }
 </script>

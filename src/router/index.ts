@@ -58,6 +58,10 @@ const routes = [
         path: "vms",
         component: () => import("../views/user/UserVMsView.vue"),
       },
+      {
+        path: "vms/:id",
+        component: () => import("../views/user/UserVMDetailView.vue"),
+      },
     ],
   },
 ];
