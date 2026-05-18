@@ -3,6 +3,7 @@
     <el-aside width="220px">
       <el-menu :default-active="activePath" router>
         <el-menu-item index="/admin/users">用户管理</el-menu-item>
+        <el-menu-item index="/admin/hosts">宿主机管理</el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -33,4 +34,3 @@ async function logout() {
   await router.replace("/login");
 }
 </script>
-

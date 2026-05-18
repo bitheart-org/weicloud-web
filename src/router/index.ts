@@ -23,6 +23,10 @@ const routes = [
         path: "users",
         component: () => import("../views/admin/AdminUsersView.vue"),
       },
+      {
+        path: "hosts",
+        component: () => import("../views/admin/AdminHostsView.vue"),
+      },
     ],
   },
   {
