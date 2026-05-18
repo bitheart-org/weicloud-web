@@ -20,24 +20,40 @@
             {{ row.cpu_cores }}C / {{ formatGB(row.memory_bytes) }}G / {{ formatGB(row.disk_root_bytes) }}G
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100" />
+        <el-table-column label="状态" width="110">
+          <template #default="{ row }">
+            <VmStatusBadge :status="row.status" />
+          </template>
+        </el-table-column>
         <el-table-column label="实时资源" min-width="200">
           <template #default="{ row }">
-            <span>{{ resourceText(row.id) }}</span>
+            <ResourceMonitor
+              compact
+              :cpu-nanoseconds="vmResources[row.id]?.cpu || 0"
+              :memory-bytes="vmResources[row.id]?.memory || 0"
+              :memory-total-bytes="row.memory_bytes"
+              :disk-bytes="row.disk_root_bytes"
+            />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="560">
           <template #default="{ row }">
-            <el-space>
-              <el-button size="small" type="success" @click="start(row.id)">开机</el-button>
-              <el-button size="small" @click="stop(row.id)">关机</el-button>
-              <el-button size="small" type="warning" @click="reboot(row.id)">重启</el-button>
-              <el-button size="small" @click="openConfigDialog(row)">改配置</el-button>
-              <el-button size="small" @click="openDiskDialog(row)">扩容</el-button>
-              <el-button size="small" @click="openNetworkDialog(row)">限速</el-button>
-              <el-button size="small" @click="openAssignDialog(row)">分配</el-button>
-              <el-button size="small" type="danger" @click="remove(row.id)">销毁</el-button>
-            </el-space>
+            <VmActions
+              :status="row.status"
+              show-config
+              show-resize
+              show-network
+              show-assign
+              show-remove
+              @start="start(row.id)"
+              @stop="stop(row.id)"
+              @reboot="reboot(row.id)"
+              @config="openConfigDialog(row)"
+              @resize="openDiskDialog(row)"
+              @network="openNetworkDialog(row)"
+              @assign="openAssignDialog(row)"
+              @remove="remove(row.id)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -133,6 +149,9 @@ import {
   type VMImage,
 } from "../../api/admin-vms";
 import { getAdminVMResource } from "../../api/admin-system";
+import ResourceMonitor from "../../components/ResourceMonitor.vue";
+import VmActions from "../../components/VmActions.vue";
+import VmStatusBadge from "../../components/VmStatusBadge.vue";
 import { getApiErrorMessage } from "../../utils/api-error";
 
 const loading = ref(false);
@@ -208,12 +227,6 @@ async function loadResource(vmID: string) {
   } catch {
     vmResources[vmID] = { cpu: 0, memory: 0 };
   }
-}
-
-function resourceText(vmID: string) {
-  const metrics = vmResources[vmID];
-  if (!metrics) return "-";
-  return `CPU: ${(metrics.cpu / 1e9).toFixed(2)}s / MEM: ${(metrics.memory / 1024 / 1024).toFixed(0)}MB`;
 }
 
 function openCreateDialog() {

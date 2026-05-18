@@ -10,34 +10,33 @@
       <el-descriptions :column="2" border v-if="vm">
         <el-descriptions-item label="名称">{{ vm.name }}</el-descriptions-item>
         <el-descriptions-item label="镜像">{{ vm.image }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ vm.status }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <VmStatusBadge :status="vm.status" />
+        </el-descriptions-item>
         <el-descriptions-item label="规格">
           {{ vm.cpu_cores }}C / {{ formatGB(vm.memory_bytes) }}G / {{ formatGB(vm.disk_root_bytes) }}G
         </el-descriptions-item>
       </el-descriptions>
-      <el-space style="margin-top: 12px">
-        <el-button type="success" @click="start">开机</el-button>
-        <el-button @click="stop">关机</el-button>
-        <el-button type="warning" @click="reboot">重启</el-button>
-      </el-space>
+      <VmActions
+        v-if="vm"
+        style="margin-top: 12px"
+        :status="vm.status"
+        @start="start"
+        @stop="stop"
+        @reboot="reboot"
+      />
     </el-card>
 
     <el-card>
       <template #header>
         <strong>实时资源监控</strong>
       </template>
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="CPU 使用(累计)">
-          {{ (resource.cpuNanoseconds / 1e9).toFixed(2) }} s
-        </el-descriptions-item>
-        <el-descriptions-item label="内存使用">
-          {{ formatMB(resource.memoryBytes) }} MB
-        </el-descriptions-item>
-      </el-descriptions>
-      <div style="margin-top: 12px">
-        <div style="margin-bottom: 6px">内存利用率</div>
-        <el-progress :percentage="memoryUsagePercent" />
-      </div>
+      <ResourceMonitor
+        :cpu-nanoseconds="resource.cpuNanoseconds"
+        :memory-bytes="resource.memoryBytes"
+        :memory-total-bytes="vm?.memory_bytes ?? 0"
+        :disk-bytes="vm?.disk_root_bytes ?? 0"
+      />
     </el-card>
 
     <VncConsole v-if="vm" :vm-id="vm.id" />
@@ -45,12 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import type { VM } from "../../api/admin-vms";
 import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
+import ResourceMonitor from "../../components/ResourceMonitor.vue";
 import VncConsole from "../../components/VncConsole.vue";
+import VmActions from "../../components/VmActions.vue";
+import VmStatusBadge from "../../components/VmStatusBadge.vue";
 import { getApiErrorMessage } from "../../utils/api-error";
 
 const route = useRoute();
@@ -139,12 +141,4 @@ function formatGB(bytes: number) {
   return Math.round(bytes / 1024 / 1024 / 1024);
 }
 
-function formatMB(bytes: number) {
-  return Math.round(bytes / 1024 / 1024);
-}
-
-const memoryUsagePercent = computed(() => {
-  if (!vm.value?.memory_bytes) return 0;
-  return Math.min(100, Math.round((resource.value.memoryBytes / vm.value.memory_bytes) * 100));
-});
 </script>

@@ -13,19 +13,34 @@
             {{ row.cpu_cores }}C / {{ formatGB(row.memory_bytes) }}G / {{ formatGB(row.disk_root_bytes) }}G
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100" />
-        <el-table-column label="实时资源" min-width="200">
-          <template #default="{ row }">{{ resourceText(row.id) }}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="260">
+        <el-table-column label="状态" width="110">
           <template #default="{ row }">
-            <el-space>
-              <el-button size="small" type="success" @click="start(row.id)">开机</el-button>
-              <el-button size="small" @click="stop(row.id)">关机</el-button>
-              <el-button size="small" type="warning" @click="reboot(row.id)">重启</el-button>
-              <el-button size="small" type="danger" @click="resetPassword(row.id)">重置密码</el-button>
-              <el-button size="small" @click="toDetail(row.id)">详情</el-button>
-            </el-space>
+            <VmStatusBadge :status="row.status" />
+          </template>
+        </el-table-column>
+        <el-table-column label="实时资源" min-width="200">
+          <template #default="{ row }">
+            <ResourceMonitor
+              compact
+              :cpu-nanoseconds="vmResources[row.id]?.cpu || 0"
+              :memory-bytes="vmResources[row.id]?.memory || 0"
+              :memory-total-bytes="row.memory_bytes"
+              :disk-bytes="row.disk_root_bytes"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="340">
+          <template #default="{ row }">
+            <VmActions
+              :status="row.status"
+              show-reset-password
+              show-detail
+              @start="start(row.id)"
+              @stop="stop(row.id)"
+              @reboot="reboot(row.id)"
+              @reset-password="resetPassword(row.id)"
+              @detail="toDetail(row.id)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -47,6 +62,9 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { getMyVMResource, listMyVMs, rebootMyVM, resetMyVMPassword, startMyVM, stopMyVM } from "../../api/user-vms";
 import type { VM } from "../../api/admin-vms";
+import ResourceMonitor from "../../components/ResourceMonitor.vue";
+import VmActions from "../../components/VmActions.vue";
+import VmStatusBadge from "../../components/VmStatusBadge.vue";
 import { getApiErrorMessage } from "../../utils/api-error";
 
 const router = useRouter();
@@ -126,12 +144,6 @@ async function resetPassword(id: string) {
 
 function formatGB(bytes: number) {
   return Math.round(bytes / 1024 / 1024 / 1024);
-}
-
-function resourceText(id: string) {
-  const metrics = vmResources.value[id];
-  if (!metrics) return "-";
-  return `CPU: ${(metrics.cpu / 1e9).toFixed(2)}s / MEM: ${(metrics.memory / 1024 / 1024).toFixed(0)}MB`;
 }
 
 async function toDetail(id: string) {
