@@ -13,10 +13,21 @@ export type VM = {
   disk_root_bytes: number;
   network_ingress: string;
   network_egress: string;
+  login_username: string;
+  ssh_remote_port: number;
   status: "running" | "stopped" | "creating" | "error";
   vnc_enabled: boolean;
   created_at: string;
   updated_at: string;
+};
+
+export type CreateVMResponse = {
+  vm: VM;
+  access: {
+    username: string;
+    password: string;
+    ssh_remote_port: number;
+  };
 };
 
 export type VMImage = {
@@ -49,7 +60,7 @@ export async function listImages() {
 }
 
 export async function createVM(payload: CreateVMRequest) {
-  const { data } = await http.post<ApiResponse<VM>>("/admin/vms", payload);
+  const { data } = await http.post<ApiResponse<CreateVMResponse>>("/admin/vms", payload);
   return data;
 }
 

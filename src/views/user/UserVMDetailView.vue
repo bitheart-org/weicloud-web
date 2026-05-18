@@ -16,6 +16,8 @@
         <el-descriptions-item label="规格">
           {{ vm.cpu_cores }}C / {{ formatGB(vm.memory_bytes) }}G / {{ formatGB(vm.disk_root_bytes) }}G
         </el-descriptions-item>
+        <el-descriptions-item label="默认用户名">{{ vm.login_username || "-" }}</el-descriptions-item>
+        <el-descriptions-item label="SSH 映射端口">{{ vm.ssh_remote_port || "-" }}</el-descriptions-item>
       </el-descriptions>
       <VmActions
         v-if="vm"
@@ -25,6 +27,9 @@
         @stop="stop"
         @reboot="reboot"
       />
+      <el-space style="margin-top: 12px">
+        <el-button type="danger" @click="passwordDialogVisible = true">修改默认用户密码</el-button>
+      </el-space>
     </el-card>
 
     <el-card>
@@ -40,6 +45,18 @@
     </el-card>
 
     <VncConsole v-if="vm" :vm-id="vm.id" />
+
+    <el-dialog v-model="passwordDialogVisible" title="修改登录密码" width="420px">
+      <el-form label-width="110px">
+        <el-form-item label="新密码">
+          <el-input v-model="newPassword" type="password" show-password placeholder="至少 8 位" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateLoginPassword">确认修改</el-button>
+      </template>
+    </el-dialog>
   </el-space>
 </template>
 
@@ -48,7 +65,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import type { VM } from "../../api/admin-vms";
-import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
+import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM, updateMyVMLoginPassword } from "../../api/user-vms";
 import ResourceMonitor from "../../components/ResourceMonitor.vue";
 import VncConsole from "../../components/VncConsole.vue";
 import VmActions from "../../components/VmActions.vue";
@@ -63,6 +80,8 @@ const resource = ref({
   memoryBytes: 0,
 });
 let timer: number | null = null;
+const passwordDialogVisible = ref(false);
+const newPassword = ref("");
 
 onMounted(load);
 onBeforeUnmount(() => {
@@ -130,6 +149,22 @@ async function reboot() {
     await load();
   } catch (error: any) {
     ElMessage.error(getApiErrorMessage(error, "重启失败"));
+  }
+}
+
+async function updateLoginPassword() {
+  if (!vm.value) return;
+  if (!newPassword.value || newPassword.value.length < 8) {
+    ElMessage.warning("请输入至少 8 位的新密码");
+    return;
+  }
+  try {
+    await updateMyVMLoginPassword(vm.value.id, newPassword.value);
+    ElMessage.success("密码修改成功");
+    passwordDialogVisible.value = false;
+    newPassword.value = "";
+  } catch (error: any) {
+    ElMessage.error(getApiErrorMessage(error, "修改密码失败"));
   }
 }
 

@@ -86,6 +86,18 @@
     </template>
   </el-dialog>
 
+  <el-dialog v-model="createResultVisible" title="初始化登录信息" width="520px">
+    <el-alert type="warning" :closable="false" show-icon>请立即保存该密码，关闭后无法再次查看。</el-alert>
+    <el-descriptions :column="1" border style="margin-top: 12px">
+      <el-descriptions-item label="默认用户名">{{ createResult.username }}</el-descriptions-item>
+      <el-descriptions-item label="初始密码">{{ createResult.password }}</el-descriptions-item>
+      <el-descriptions-item label="SSH 映射端口">{{ createResult.ssh_remote_port }}</el-descriptions-item>
+    </el-descriptions>
+    <template #footer>
+      <el-button type="primary" @click="createResultVisible = false">我已记录</el-button>
+    </template>
+  </el-dialog>
+
   <el-dialog v-model="configVisible" title="修改配置" width="420px">
     <el-form :model="configForm" label-width="90px">
       <el-form-item label="CPU 核数"><el-input-number v-model="configForm.cpu_cores" :min="1" :max="128" /></el-form-item>
@@ -213,6 +225,12 @@ const assignForm = reactive({ owner_id: "" });
 const assignableUsers = ref<UserOption[]>([]);
 const assignUsersLoading = ref(false);
 const vmResources = reactive<Record<string, { cpu: number; memory: number }>>({});
+const createResultVisible = ref(false);
+const createResult = reactive({
+  username: "",
+  password: "",
+  ssh_remote_port: 0,
+});
 
 onMounted(loadData);
 
@@ -258,7 +276,11 @@ function openCreateDialog() {
 
 async function create() {
   try {
-    await createVM(createForm);
+    const res = await createVM(createForm);
+    createResult.username = res.data.access.username;
+    createResult.password = res.data.access.password;
+    createResult.ssh_remote_port = res.data.access.ssh_remote_port;
+    createResultVisible.value = true;
     ElMessage.success("创建任务已提交");
     createVisible.value = false;
     await loadData();

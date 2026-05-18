@@ -43,3 +43,10 @@ export async function getMyVMResource(id: string) {
   );
   return data;
 }
+
+export async function updateMyVMLoginPassword(id: string, password: string) {
+  const { data } = await http.put<ApiResponse<{ username: string; new_password: string }>>(`/user/vms/${id}/login-password`, {
+    password,
+  });
+  return data;
+}
