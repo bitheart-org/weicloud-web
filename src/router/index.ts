@@ -17,7 +17,11 @@ const routes = [
     children: [
       {
         path: "",
-        redirect: "/admin/users",
+        redirect: "/admin/dashboard",
+      },
+      {
+        path: "dashboard",
+        component: () => import("../views/admin/AdminDashboardView.vue"),
       },
       {
         path: "users",
@@ -30,6 +34,10 @@ const routes = [
       {
         path: "vms",
         component: () => import("../views/admin/AdminVMsView.vue"),
+      },
+      {
+        path: "logs",
+        component: () => import("../views/admin/AdminLogsView.vue"),
       },
     ],
   },
@@ -73,7 +81,7 @@ router.beforeEach(async (to) => {
         return true;
       }
     }
-    return authStore.role === "admin" ? "/admin/vms" : "/user/vms";
+    return authStore.role === "admin" ? "/admin/dashboard" : "/user/vms";
   }
 
   if (!requiresAuth) {
@@ -94,7 +102,7 @@ router.beforeEach(async (to) => {
   }
 
   if (requiredRole && authStore.role !== requiredRole) {
-    return authStore.role === "admin" ? "/admin/vms" : "/user/vms";
+    return authStore.role === "admin" ? "/admin/dashboard" : "/user/vms";
   }
 
   return true;

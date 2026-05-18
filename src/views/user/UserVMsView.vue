@@ -14,6 +14,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100" />
+        <el-table-column label="实时资源" min-width="200">
+          <template #default="{ row }">{{ resourceText(row.id) }}</template>
+        </el-table-column>
         <el-table-column label="操作" width="260">
           <template #default="{ row }">
             <el-space>
@@ -31,11 +34,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { listMyVMs, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
+import { getMyVMResource, listMyVMs, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
 import type { VM } from "../../api/admin-vms";
 
 const loading = ref(false);
 const vms = ref<VM[]>([]);
+const vmResources = ref<Record<string, { cpu: number; memory: number }>>({});
 
 onMounted(loadVMs);
 
@@ -44,10 +48,23 @@ async function loadVMs() {
   try {
     const res = await listMyVMs();
     vms.value = res.data.items;
+    await Promise.all(vms.value.map((vm) => loadResource(vm.id)));
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || "加载虚拟机失败");
   } finally {
     loading.value = false;
+  }
+
+  async function loadResource(id: string) {
+    try {
+      const res = await getMyVMResource(id);
+      vmResources.value[id] = {
+        cpu: res.data.cpu_nanoseconds,
+        memory: res.data.memory_bytes,
+      };
+    } catch {
+      vmResources.value[id] = { cpu: 0, memory: 0 };
+    }
   }
 }
 
@@ -84,5 +101,10 @@ async function reboot(id: string) {
 function formatGB(bytes: number) {
   return Math.round(bytes / 1024 / 1024 / 1024);
 }
-</script>
 
+function resourceText(id: string) {
+  const metrics = vmResources.value[id];
+  if (!metrics) return "-";
+  return `CPU: ${(metrics.cpu / 1e9).toFixed(2)}s / MEM: ${(metrics.memory / 1024 / 1024).toFixed(0)}MB`;
+}
+</script>

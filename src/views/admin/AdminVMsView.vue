@@ -21,6 +21,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100" />
+        <el-table-column label="实时资源" min-width="200">
+          <template #default="{ row }">
+            <span>{{ resourceText(row.id) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="560">
           <template #default="{ row }">
             <el-space>
@@ -127,6 +132,7 @@ updateVMNetwork,
   type VM,
   type VMImage,
 } from "../../api/admin-vms";
+import { getAdminVMResource } from "../../api/admin-system";
 
 const loading = ref(false);
 const vms = ref<VM[]>([]);
@@ -172,6 +178,7 @@ const diskGB = computed({
 });
 const networkForm = reactive({ ingress: "", egress: "" });
 const assignForm = reactive({ owner_id: "" });
+const vmResources = reactive<Record<string, { cpu: number; memory: number }>>({});
 
 onMounted(loadData);
 
@@ -182,11 +189,30 @@ async function loadData() {
     vms.value = vmRes.data.items;
     hosts.value = hostRes.data.items;
     images.value = imageRes.data.items;
+    await Promise.all(vms.value.map((vm) => loadResource(vm.id)));
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || "加载 VM 数据失败");
   } finally {
     loading.value = false;
   }
+}
+
+async function loadResource(vmID: string) {
+  try {
+    const res = await getAdminVMResource(vmID);
+    vmResources[vmID] = {
+      cpu: res.data.cpu_nanoseconds,
+      memory: res.data.memory_bytes,
+    };
+  } catch {
+    vmResources[vmID] = { cpu: 0, memory: 0 };
+  }
+}
+
+function resourceText(vmID: string) {
+  const metrics = vmResources[vmID];
+  if (!metrics) return "-";
+  return `CPU: ${(metrics.cpu / 1e9).toFixed(2)}s / MEM: ${(metrics.memory / 1024 / 1024).toFixed(0)}MB`;
 }
 
 function openCreateDialog() {

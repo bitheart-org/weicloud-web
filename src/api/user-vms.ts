@@ -27,3 +27,9 @@ export async function rebootMyVM(id: string) {
   return data;
 }
 
+export async function getMyVMResource(id: string) {
+  const { data } = await http.get<ApiResponse<{ cpu_nanoseconds: number; memory_bytes: number }>>(
+    `/user/vms/${id}/resource`,
+  );
+  return data;
+}
