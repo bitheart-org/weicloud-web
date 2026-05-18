@@ -22,30 +22,78 @@
       </el-space>
     </el-card>
 
+    <el-card>
+      <template #header>
+        <strong>实时资源监控</strong>
+      </template>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="CPU 使用(累计)">
+          {{ (resource.cpuNanoseconds / 1e9).toFixed(2) }} s
+        </el-descriptions-item>
+        <el-descriptions-item label="内存使用">
+          {{ formatMB(resource.memoryBytes) }} MB
+        </el-descriptions-item>
+      </el-descriptions>
+      <div style="margin-top: 12px">
+        <div style="margin-bottom: 6px">内存利用率</div>
+        <el-progress :percentage="memoryUsagePercent" />
+      </div>
+    </el-card>
+
     <VncConsole v-if="vm" :vm-id="vm.id" />
   </el-space>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import type { VM } from "../../api/admin-vms";
-import { getMyVM, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
+import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
 import VncConsole from "../../components/VncConsole.vue";
 
 const route = useRoute();
 const router = useRouter();
 const vm = ref<VM | null>(null);
+const resource = ref({
+  cpuNanoseconds: 0,
+  memoryBytes: 0,
+});
+let timer: number | null = null;
 
 onMounted(load);
+onBeforeUnmount(() => {
+  if (timer) {
+    window.clearInterval(timer);
+    timer = null;
+  }
+});
 
 async function load() {
   try {
     const res = await getMyVM(String(route.params.id));
     vm.value = res.data;
+    await loadResource();
+    if (!timer) {
+      timer = window.setInterval(() => {
+        void loadResource();
+      }, 5000);
+    }
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || "加载虚拟机详情失败");
+  }
+}
+
+async function loadResource() {
+  if (!vm.value) return;
+  try {
+    const res = await getMyVMResource(vm.value.id);
+    resource.value = {
+      cpuNanoseconds: res.data.cpu_nanoseconds,
+      memoryBytes: res.data.memory_bytes,
+    };
+  } catch {
+    // ignore single polling failure
   }
 }
 
@@ -89,5 +137,13 @@ async function back() {
 function formatGB(bytes: number) {
   return Math.round(bytes / 1024 / 1024 / 1024);
 }
-</script>
 
+function formatMB(bytes: number) {
+  return Math.round(bytes / 1024 / 1024);
+}
+
+const memoryUsagePercent = computed(() => {
+  if (!vm.value?.memory_bytes) return 0;
+  return Math.min(100, Math.round((resource.value.memoryBytes / vm.value.memory_bytes) * 100));
+});
+</script>
