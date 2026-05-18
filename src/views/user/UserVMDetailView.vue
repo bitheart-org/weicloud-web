@@ -45,6 +45,7 @@
     </el-card>
 
     <VncConsole v-if="vm" :vm-id="vm.id" />
+    <VmShellConsole v-if="vm" :vm-id="vm.id" />
 
     <el-dialog v-model="passwordDialogVisible" title="修改登录密码" width="420px">
       <el-form label-width="110px">
@@ -68,6 +69,7 @@ import type { VM } from "../../api/admin-vms";
 import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM, updateMyVMLoginPassword } from "../../api/user-vms";
 import ResourceMonitor from "../../components/ResourceMonitor.vue";
 import VncConsole from "../../components/VncConsole.vue";
+import VmShellConsole from "../../components/VmShellConsole.vue";
 import VmActions from "../../components/VmActions.vue";
 import VmStatusBadge from "../../components/VmStatusBadge.vue";
 import { getApiErrorMessage } from "../../utils/api-error";
