@@ -108,6 +108,7 @@ import {
   type UpdateUserRequest,
 } from "../../api/admin-users";
 import type { UserInfo } from "../../api/auth";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const loading = ref(false);
 const users = ref<UserInfo[]>([]);
@@ -149,7 +150,7 @@ async function loadUsers() {
     users.value = res.data.items;
     total.value = res.data.total;
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载用户失败");
+    ElMessage.error(getApiErrorMessage(error, "加载用户失败"));
   } finally {
     loading.value = false;
   }
@@ -171,7 +172,7 @@ async function create() {
     createDialogVisible.value = false;
     await loadUsers();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "创建失败");
+    ElMessage.error(getApiErrorMessage(error, "创建失败"));
   }
 }
 
@@ -191,7 +192,7 @@ async function update() {
     editDialogVisible.value = false;
     await loadUsers();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "更新失败");
+    ElMessage.error(getApiErrorMessage(error, "更新失败"));
   }
 }
 
@@ -211,7 +212,7 @@ async function resetPassword() {
     ElMessage.success("密码已重置");
     resetDialogVisible.value = false;
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "重置失败");
+    ElMessage.error(getApiErrorMessage(error, "重置失败"));
   }
 }
 
@@ -223,7 +224,7 @@ async function disable(userId: string) {
     await loadUsers();
   } catch (error: any) {
     if (error !== "cancel") {
-      ElMessage.error(error?.response?.data?.message || "禁用失败");
+      ElMessage.error(getApiErrorMessage(error, "禁用失败"));
     }
   }
 }

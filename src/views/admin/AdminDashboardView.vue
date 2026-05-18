@@ -40,6 +40,7 @@
 import { computed, onMounted, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import { getDashboard } from "../../api/admin-system";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const data = reactive({
   hosts_total: 0,
@@ -65,7 +66,7 @@ async function load() {
     const res = await getDashboard();
     Object.assign(data, res.data);
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载仪表盘失败");
+    ElMessage.error(getApiErrorMessage(error, "加载仪表盘失败"));
   }
 }
 
@@ -74,4 +75,3 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024 / 1024).toFixed(1)} GB`;
 }
 </script>
-

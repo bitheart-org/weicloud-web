@@ -83,6 +83,7 @@ import {
   type Host,
   type UpdateHostRequest,
 } from "../../api/admin-hosts";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const loading = ref(false);
 const hosts = ref<Host[]>([]);
@@ -114,7 +115,7 @@ async function loadHosts() {
     const res = await listHosts();
     hosts.value = res.data.items;
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载宿主机失败");
+    ElMessage.error(getApiErrorMessage(error, "加载宿主机失败"));
   } finally {
     loading.value = false;
   }
@@ -135,7 +136,7 @@ async function create() {
     createDialogVisible.value = false;
     await loadHosts();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "创建失败");
+    ElMessage.error(getApiErrorMessage(error, "创建失败"));
   }
 }
 
@@ -156,7 +157,7 @@ async function update() {
     editDialogVisible.value = false;
     await loadHosts();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "更新失败");
+    ElMessage.error(getApiErrorMessage(error, "更新失败"));
   }
 }
 
@@ -166,7 +167,7 @@ async function sync(id: string) {
     ElMessage.success("同步完成");
     await loadHosts();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "同步失败");
+    ElMessage.error(getApiErrorMessage(error, "同步失败"));
   }
 }
 
@@ -178,7 +179,7 @@ async function remove(id: string) {
     await loadHosts();
   } catch (error: any) {
     if (error !== "cancel") {
-      ElMessage.error(error?.response?.data?.message || "删除失败");
+      ElMessage.error(getApiErrorMessage(error, "删除失败"));
     }
   }
 }

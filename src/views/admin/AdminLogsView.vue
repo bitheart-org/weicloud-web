@@ -34,6 +34,7 @@
 import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { getOperationLogs, type OperationLog } from "../../api/admin-system";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const loading = ref(false);
 const logs = ref<OperationLog[]>([]);
@@ -50,7 +51,7 @@ async function loadLogs() {
     logs.value = res.data.items;
     total.value = res.data.total;
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载日志失败");
+    ElMessage.error(getApiErrorMessage(error, "加载日志失败"));
   } finally {
     loading.value = false;
   }

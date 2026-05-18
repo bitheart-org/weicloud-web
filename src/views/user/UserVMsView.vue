@@ -47,6 +47,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { getMyVMResource, listMyVMs, rebootMyVM, resetMyVMPassword, startMyVM, stopMyVM } from "../../api/user-vms";
 import type { VM } from "../../api/admin-vms";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const router = useRouter();
 const loading = ref(false);
@@ -64,7 +65,7 @@ async function loadVMs() {
     vms.value = res.data.items;
     await Promise.all(vms.value.map((vm) => loadResource(vm.id)));
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载虚拟机失败");
+    ElMessage.error(getApiErrorMessage(error, "加载虚拟机失败"));
   } finally {
     loading.value = false;
   }
@@ -88,7 +89,7 @@ async function start(id: string) {
     ElMessage.success("开机成功");
     await loadVMs();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "开机失败");
+    ElMessage.error(getApiErrorMessage(error, "开机失败"));
   }
 }
 
@@ -98,7 +99,7 @@ async function stop(id: string) {
     ElMessage.success("关机成功");
     await loadVMs();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "关机失败");
+    ElMessage.error(getApiErrorMessage(error, "关机失败"));
   }
 }
 
@@ -108,7 +109,7 @@ async function reboot(id: string) {
     ElMessage.success("重启成功");
     await loadVMs();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "重启失败");
+    ElMessage.error(getApiErrorMessage(error, "重启失败"));
   }
 }
 
@@ -119,7 +120,7 @@ async function resetPassword(id: string) {
     passwordDialogVisible.value = true;
     ElMessage.success("密码已重置");
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "重置密码失败");
+    ElMessage.error(getApiErrorMessage(error, "重置密码失败"));
   }
 }
 

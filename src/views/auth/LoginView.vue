@@ -22,6 +22,7 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -43,7 +44,7 @@ async function onSubmit() {
     ElMessage.success("登录成功");
     await router.replace(authStore.role === "admin" ? "/admin/dashboard" : "/user/vms");
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "登录失败");
+    ElMessage.error(getApiErrorMessage(error, "登录失败"));
   } finally {
     loading.value = false;
   }

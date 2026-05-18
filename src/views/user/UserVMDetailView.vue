@@ -51,6 +51,7 @@ import { useRoute, useRouter } from "vue-router";
 import type { VM } from "../../api/admin-vms";
 import { getMyVM, getMyVMResource, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
 import VncConsole from "../../components/VncConsole.vue";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const route = useRoute();
 const router = useRouter();
@@ -80,7 +81,7 @@ async function load() {
       }, 5000);
     }
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载虚拟机详情失败");
+    ElMessage.error(getApiErrorMessage(error, "加载虚拟机详情失败"));
   }
 }
 
@@ -104,7 +105,7 @@ async function start() {
     ElMessage.success("开机成功");
     await load();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "开机失败");
+    ElMessage.error(getApiErrorMessage(error, "开机失败"));
   }
 }
 
@@ -115,7 +116,7 @@ async function stop() {
     ElMessage.success("关机成功");
     await load();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "关机失败");
+    ElMessage.error(getApiErrorMessage(error, "关机失败"));
   }
 }
 
@@ -126,7 +127,7 @@ async function reboot() {
     ElMessage.success("重启成功");
     await load();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "重启失败");
+    ElMessage.error(getApiErrorMessage(error, "重启失败"));
   }
 }
 

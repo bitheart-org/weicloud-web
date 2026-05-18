@@ -133,6 +133,7 @@ import {
   type VMImage,
 } from "../../api/admin-vms";
 import { getAdminVMResource } from "../../api/admin-system";
+import { getApiErrorMessage } from "../../utils/api-error";
 
 const loading = ref(false);
 const vms = ref<VM[]>([]);
@@ -191,7 +192,7 @@ async function loadData() {
     images.value = imageRes.data.items;
     await Promise.all(vms.value.map((vm) => loadResource(vm.id)));
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "加载 VM 数据失败");
+    ElMessage.error(getApiErrorMessage(error, "加载 VM 数据失败"));
   } finally {
     loading.value = false;
   }
@@ -235,7 +236,7 @@ async function create() {
     createVisible.value = false;
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "创建失败");
+    ElMessage.error(getApiErrorMessage(error, "创建失败"));
   }
 }
 
@@ -253,7 +254,7 @@ async function updateConfig() {
     configVisible.value = false;
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "更新配置失败");
+    ElMessage.error(getApiErrorMessage(error, "更新配置失败"));
   }
 }
 
@@ -270,7 +271,7 @@ async function resizeDisk() {
     diskVisible.value = false;
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "扩容失败");
+    ElMessage.error(getApiErrorMessage(error, "扩容失败"));
   }
 }
 
@@ -288,7 +289,7 @@ async function updateNetwork() {
     networkVisible.value = false;
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "更新网速限制失败");
+    ElMessage.error(getApiErrorMessage(error, "更新网速限制失败"));
   }
 }
 
@@ -309,7 +310,7 @@ async function assign() {
     assignVisible.value = false;
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "分配失败");
+    ElMessage.error(getApiErrorMessage(error, "分配失败"));
   }
 }
 
@@ -321,7 +322,7 @@ async function remove(id: string) {
     await loadData();
   } catch (error: any) {
     if (error !== "cancel") {
-      ElMessage.error(error?.response?.data?.message || "销毁失败");
+      ElMessage.error(getApiErrorMessage(error, "销毁失败"));
     }
   }
 }
@@ -332,7 +333,7 @@ async function start(id: string) {
     ElMessage.success("开机成功");
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "开机失败");
+    ElMessage.error(getApiErrorMessage(error, "开机失败"));
   }
 }
 
@@ -342,7 +343,7 @@ async function stop(id: string) {
     ElMessage.success("关机成功");
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "关机失败");
+    ElMessage.error(getApiErrorMessage(error, "关机失败"));
   }
 }
 
@@ -352,7 +353,7 @@ async function reboot(id: string) {
     ElMessage.success("重启成功");
     await loadData();
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "重启失败");
+    ElMessage.error(getApiErrorMessage(error, "重启失败"));
   }
 }
 

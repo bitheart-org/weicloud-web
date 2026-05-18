@@ -17,6 +17,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { issueMyVMVncToken } from "../api/user-vms";
+import { getApiErrorMessage } from "../utils/api-error";
 
 const props = defineProps<{
   vmId: string;
@@ -54,7 +55,7 @@ async function connect() {
       ElMessage.warning("VNC 需要凭据，请检查虚拟机设置");
     });
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.message || "VNC 连接失败");
+    ElMessage.error(getApiErrorMessage(error, "VNC 连接失败"));
   }
 }
 
