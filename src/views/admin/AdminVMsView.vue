@@ -1,21 +1,23 @@
 <template>
   <el-space direction="vertical" fill :size="16" style="width: 100%">
-    <el-card>
+    <el-card class="modern-card">
       <el-space>
         <el-button type="primary" @click="loadData">刷新</el-button>
         <el-button type="success" @click="openCreateDialog">创建 VM</el-button>
       </el-space>
     </el-card>
 
-    <el-card>
-      <el-table :data="vms" v-loading="loading" empty-text="暂无虚拟机">
-        <el-table-column prop="name" label="名称" min-width="140" />
-        <el-table-column prop="image" label="镜像" min-width="180" />
-        <el-table-column prop="host_id" label="宿主机 ID" min-width="220" />
-        <el-table-column prop="owner_id" label="用户 ID" min-width="220">
-          <template #default="{ row }">{{ row.owner_id || "-" }}</template>
+    <el-card class="modern-card">
+      <el-table :data="vms" v-loading="loading" empty-text="暂无虚拟机" table-layout="fixed">
+        <el-table-column prop="name" label="名称" min-width="130" show-overflow-tooltip />
+        <el-table-column prop="image" label="镜像" min-width="150" show-overflow-tooltip />
+        <el-table-column label="宿主机" min-width="130" show-overflow-tooltip>
+          <template #default="{ row }">{{ shortID(row.host_id) }}</template>
         </el-table-column>
-        <el-table-column label="规格" min-width="180">
+        <el-table-column label="用户" min-width="130" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.owner_id ? shortID(row.owner_id) : "-" }}</template>
+        </el-table-column>
+        <el-table-column label="规格" min-width="150">
           <template #default="{ row }">
             {{ row.cpu_cores }}C / {{ formatGB(row.memory_bytes) }}G / {{ formatGB(row.disk_root_bytes) }}G
           </template>
@@ -25,7 +27,7 @@
             <VmStatusBadge :status="row.status" />
           </template>
         </el-table-column>
-        <el-table-column label="实时资源" min-width="200">
+        <el-table-column label="实时资源" min-width="170">
           <template #default="{ row }">
             <ResourceMonitor
               compact
@@ -36,10 +38,11 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="560">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
             <VmActions
               :status="row.status"
+              compact
               show-config
               show-resize
               show-network
@@ -421,5 +424,11 @@ async function reboot(id: string) {
 
 function formatGB(bytes: number) {
   return Math.round(bytes / 1024 / 1024 / 1024);
+}
+
+function shortID(id: string) {
+  if (!id) return "-";
+  if (id.length <= 14) return id;
+  return `${id.slice(0, 6)}...${id.slice(-4)}`;
 }
 </script>
