@@ -120,7 +120,18 @@
 
   <el-dialog v-model="assignVisible" title="分配用户" width="420px">
     <el-form :model="assignForm" label-width="90px">
-      <el-form-item label="Owner ID"><el-input v-model="assignForm.owner_id" /></el-form-item>
+      <el-form-item label="用户">
+        <el-select
+          v-model="assignForm.owner_id"
+          filterable
+          clearable
+          placeholder="请选择普通用户"
+          :loading="assignUsersLoading"
+          style="width: 100%"
+        >
+          <el-option v-for="user in assignableUsers" :key="user.id" :label="`${user.name} (${user.id})`" :value="user.id" />
+        </el-select>
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="assignVisible = false">取消</el-button>
@@ -133,6 +144,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { listHosts, type Host } from "../../api/admin-hosts";
+import { listUserOptions, type UserOption } from "../../api/admin-users";
 import {
   assignVM,
   createVM,
@@ -198,6 +210,8 @@ const diskGB = computed({
 });
 const networkForm = reactive({ ingress: "", egress: "" });
 const assignForm = reactive({ owner_id: "" });
+const assignableUsers = ref<UserOption[]>([]);
+const assignUsersLoading = ref(false);
 const vmResources = reactive<Record<string, { cpu: number; memory: number }>>({});
 
 onMounted(loadData);
@@ -306,15 +320,28 @@ async function updateNetwork() {
   }
 }
 
-function openAssignDialog(vm: VM) {
+async function openAssignDialog(vm: VM) {
   selectedID.value = vm.id;
+  await loadAssignableUsers();
   assignForm.owner_id = vm.owner_id || "";
   assignVisible.value = true;
 }
 
+async function loadAssignableUsers() {
+  assignUsersLoading.value = true;
+  try {
+    const res = await listUserOptions();
+    assignableUsers.value = res.data.items;
+  } catch (error: any) {
+    ElMessage.error(getApiErrorMessage(error, "加载用户选项失败"));
+  } finally {
+    assignUsersLoading.value = false;
+  }
+}
+
 async function assign() {
   if (!assignForm.owner_id) {
-    ElMessage.warning("请输入 Owner ID");
+    ElMessage.warning("请选择用户");
     return;
   }
   try {

@@ -23,6 +23,11 @@ export type UpdateUserRequest = {
   status?: "active" | "disabled";
 };
 
+export type UserOption = {
+  id: string;
+  name: string;
+};
+
 export async function listUsers(params: { page: number; pageSize: number; query: string }) {
   const { data } = await http.get<ApiResponse<ListUsersResponse>>("/admin/users", {
     params: {
@@ -31,6 +36,11 @@ export async function listUsers(params: { page: number; pageSize: number; query:
       query: params.query,
     },
   });
+  return data;
+}
+
+export async function listUserOptions() {
+  const { data } = await http.get<ApiResponse<{ items: UserOption[] }>>("/admin/users/options");
   return data;
 }
 
@@ -53,4 +63,3 @@ export async function resetUserPassword(id: string, password: string) {
   const { data } = await http.put<ApiResponse<{ id: string }>>(`/admin/users/${id}/password`, { password });
   return data;
 }
-
