@@ -41,7 +41,7 @@ async function onSubmit() {
   try {
     await authStore.loginWithPassword(form.username, form.password);
     ElMessage.success("登录成功");
-    await router.replace(authStore.role === "admin" ? "/admin/users" : "/user/profile");
+    await router.replace(authStore.role === "admin" ? "/admin/vms" : "/user/vms");
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || "登录失败");
   } finally {
@@ -63,4 +63,3 @@ async function onSubmit() {
   width: 420px;
 }
 </style>
-

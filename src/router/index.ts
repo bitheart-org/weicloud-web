@@ -27,6 +27,10 @@ const routes = [
         path: "hosts",
         component: () => import("../views/admin/AdminHostsView.vue"),
       },
+      {
+        path: "vms",
+        component: () => import("../views/admin/AdminVMsView.vue"),
+      },
     ],
   },
   {
@@ -41,6 +45,10 @@ const routes = [
       {
         path: "profile",
         component: () => import("../views/user/UserProfileView.vue"),
+      },
+      {
+        path: "vms",
+        component: () => import("../views/user/UserVMsView.vue"),
       },
     ],
   },
@@ -65,7 +73,7 @@ router.beforeEach(async (to) => {
         return true;
       }
     }
-    return authStore.role === "admin" ? "/admin/users" : "/user/profile";
+    return authStore.role === "admin" ? "/admin/vms" : "/user/vms";
   }
 
   if (!requiresAuth) {
@@ -86,7 +94,7 @@ router.beforeEach(async (to) => {
   }
 
   if (requiredRole && authStore.role !== requiredRole) {
-    return authStore.role === "admin" ? "/admin/users" : "/user/profile";
+    return authStore.role === "admin" ? "/admin/vms" : "/user/vms";
   }
 
   return true;
