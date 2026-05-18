@@ -5,7 +5,7 @@
     </el-card>
 
     <el-card>
-      <el-table :data="vms" v-loading="loading">
+      <el-table :data="vms" v-loading="loading" empty-text="暂无分配的虚拟机">
         <el-table-column prop="name" label="名称" min-width="140" />
         <el-table-column prop="image" label="镜像" min-width="170" />
         <el-table-column label="规格" min-width="180">
@@ -23,23 +23,34 @@
               <el-button size="small" type="success" @click="start(row.id)">开机</el-button>
               <el-button size="small" @click="stop(row.id)">关机</el-button>
               <el-button size="small" type="warning" @click="reboot(row.id)">重启</el-button>
+              <el-button size="small" type="danger" @click="resetPassword(row.id)">重置密码</el-button>
             </el-space>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
   </el-space>
+
+  <el-dialog v-model="passwordDialogVisible" title="新 root 密码" width="420px">
+    <el-alert type="warning" :closable="false" show-icon>请立即记录该密码，关闭后将无法再次查看。</el-alert>
+    <el-input v-model="newPassword" readonly style="margin-top: 12px" />
+    <template #footer>
+      <el-button type="primary" @click="passwordDialogVisible = false">我已记录</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { getMyVMResource, listMyVMs, rebootMyVM, startMyVM, stopMyVM } from "../../api/user-vms";
+import { getMyVMResource, listMyVMs, rebootMyVM, resetMyVMPassword, startMyVM, stopMyVM } from "../../api/user-vms";
 import type { VM } from "../../api/admin-vms";
 
 const loading = ref(false);
 const vms = ref<VM[]>([]);
 const vmResources = ref<Record<string, { cpu: number; memory: number }>>({});
+const passwordDialogVisible = ref(false);
+const newPassword = ref("");
 
 onMounted(loadVMs);
 
@@ -54,17 +65,17 @@ async function loadVMs() {
   } finally {
     loading.value = false;
   }
+}
 
-  async function loadResource(id: string) {
-    try {
-      const res = await getMyVMResource(id);
-      vmResources.value[id] = {
-        cpu: res.data.cpu_nanoseconds,
-        memory: res.data.memory_bytes,
-      };
-    } catch {
-      vmResources.value[id] = { cpu: 0, memory: 0 };
-    }
+async function loadResource(id: string) {
+  try {
+    const res = await getMyVMResource(id);
+    vmResources.value[id] = {
+      cpu: res.data.cpu_nanoseconds,
+      memory: res.data.memory_bytes,
+    };
+  } catch {
+    vmResources.value[id] = { cpu: 0, memory: 0 };
   }
 }
 
@@ -95,6 +106,17 @@ async function reboot(id: string) {
     await loadVMs();
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || "重启失败");
+  }
+}
+
+async function resetPassword(id: string) {
+  try {
+    const res = await resetMyVMPassword(id);
+    newPassword.value = res.data.new_password;
+    passwordDialogVisible.value = true;
+    ElMessage.success("密码已重置");
+  } catch (error: any) {
+    ElMessage.error(error?.response?.data?.message || "重置密码失败");
   }
 }
 

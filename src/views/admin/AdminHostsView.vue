@@ -8,7 +8,7 @@
     </el-card>
 
     <el-card>
-      <el-table :data="hosts" v-loading="loading">
+      <el-table :data="hosts" v-loading="loading" empty-text="暂无宿主机">
         <el-table-column prop="name" label="名称" min-width="140" />
         <el-table-column prop="address" label="地址" min-width="260" />
         <el-table-column prop="cpu_cores" label="CPU 核数" width="100" />
@@ -195,4 +195,3 @@ function formatBytes(bytes: number) {
   return `${gb.toFixed(1)} GB`;
 }
 </script>
-

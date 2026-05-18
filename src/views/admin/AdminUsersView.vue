@@ -9,7 +9,7 @@
     </el-card>
 
     <el-card>
-      <el-table :data="users" v-loading="loading">
+      <el-table :data="users" v-loading="loading" empty-text="暂无用户">
         <el-table-column prop="username" label="用户名" min-width="130" />
         <el-table-column prop="display_name" label="显示名" min-width="150" />
         <el-table-column prop="email" label="邮箱" min-width="180" />
@@ -228,4 +228,3 @@ async function disable(userId: string) {
   }
 }
 </script>
-

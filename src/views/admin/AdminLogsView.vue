@@ -4,7 +4,7 @@
       <el-button type="primary" @click="loadLogs">刷新</el-button>
     </el-card>
     <el-card>
-      <el-table :data="logs" v-loading="loading">
+      <el-table :data="logs" v-loading="loading" empty-text="暂无操作日志">
         <el-table-column prop="created_at" label="时间" min-width="180">
           <template #default="{ row }">{{ new Date(row.created_at).toLocaleString() }}</template>
         </el-table-column>
@@ -56,4 +56,3 @@ async function loadLogs() {
   }
 }
 </script>
-

@@ -8,7 +8,7 @@
     </el-card>
 
     <el-card>
-      <el-table :data="vms" v-loading="loading">
+      <el-table :data="vms" v-loading="loading" empty-text="暂无虚拟机">
         <el-table-column prop="name" label="名称" min-width="140" />
         <el-table-column prop="image" label="镜像" min-width="180" />
         <el-table-column prop="host_id" label="宿主机 ID" min-width="220" />
@@ -123,12 +123,12 @@ import {
   deleteVM,
   listImages,
   listVMs,
-rebootVM,
-resizeVMDisk,
-startVM,
-stopVM,
-updateVMConfig,
-updateVMNetwork,
+  rebootVM,
+  resizeVMDisk,
+  startVM,
+  stopVM,
+  updateVMConfig,
+  updateVMNetwork,
   type VM,
   type VMImage,
 } from "../../api/admin-vms";

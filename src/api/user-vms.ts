@@ -27,6 +27,11 @@ export async function rebootMyVM(id: string) {
   return data;
 }
 
+export async function resetMyVMPassword(id: string) {
+  const { data } = await http.post<ApiResponse<{ new_password: string }>>(`/user/vms/${id}/password`);
+  return data;
+}
+
 export async function getMyVMResource(id: string) {
   const { data } = await http.get<ApiResponse<{ cpu_nanoseconds: number; memory_bytes: number }>>(
     `/user/vms/${id}/resource`,
